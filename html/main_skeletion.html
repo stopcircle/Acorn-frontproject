@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>CGV 클론</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<div class="container">
+		<aside class="sidebar">
+			<div class="logo">CGV</div>
+			<nav class="nav-menu">
+				<button onclick="loadPage('home.html')">홈</button>
+				<button onclick="loadPage('cinema.html')">씨네톡</button>
+				<button onclick="loadPage('ticket.html')">예매/예약</button>
+				<button onclick="loadPage('store.html')">매점</button>
+				<button onclick="loadPage('more.html')">더보기</button>
+				<hr />
+				<button onclick="loadPage('location.html')">상영관 찾기</button>
+				<button onclick="loadPage('special.html')">특별관</button>
+			</nav>
+			<footer class="footer">
+				<p>CJ CGV(주)</p>
+				<small><a href="#">개인정보 처리방침</a></small>
+			</footer>
+		</aside>
+
+		<main id="content">
+			<!-- 여기에 본문이 동적으로 로딩됨 -->
+		</main>
+
+		<aside class="side-banner">
+			<div class="promo">
+				<h4>판타스틱4</h4>
+				<p>예매오픈! 7월 극장에서!</p>
+				<button>자세히보기</button>
+			</div>
+			<div class="qrcode">
+				<p>CGV 앱에서 자세히 보기</p>
+				<img src="qrcode.png" alt="QR코드">
+			</div>
+		</aside>
+	</div>
+
+	<script>
+		// 페이지 내용을 동적으로 불러오는 함수
+		// 인자로 받은 파일명(url)의 HTML 내용을 fetch로 가져와서 <main id="content">에 넣는다.
+		async function loadPage(url) {
+			// 1. 본문이 들어갈 <main id="content"> 요소를 가져온다.
+			const content = document.getElementById('content');
+
+			// 2. 사용자에게 '로딩 중'임을 보여주기 위해 임시 메시지를 삽입한다.
+			// CSS에서 .skeleton 클래스에 회색 배경이나 애니메이션 효과를 주면 좋다.
+			content.innerHTML = '<div class="skeleton">불러오는 중...</div>';
+
+			try {
+				// 3. fetch()를 사용해 해당 HTML 파일을 비동기적으로 요청한다.
+				// url 매개변수는 예: 'home.html', 'cinema.html' 등이다.
+				const response = await fetch(url);
+
+				// 4. 만약 서버 응답 상태가 200번대(정상)가 아니라면 에러를 발생시킨다.
+				if (!response.ok) {
+					// 예: 404 Not Found, 500 Server Error 등의 경우
+					throw new Error('페이지 불러오기 실패');
+				}
+
+				// 5. 응답 내용을 텍스트(HTML 문자열)로 변환한다.
+				const html = await response.text();
+
+				// 6. 변환한 HTML 내용을 content 영역에 삽입한다.
+				content.innerHTML = html;
+
+			} catch (error) {
+				// 7. 에러가 발생한 경우 (ex. 파일이 없거나 네트워크 문제)
+				// 사용자에게 빨간색 오류 메시지를 표시한다.
+				content.innerHTML = `<p style="color:red;">오류: ${error.message}</p>`;
+			}
+		}
+
+		// 페이지가 처음 열릴 때 자동으로 'home.html'을 로드하도록 설정
+		// window.onload는 브라우저가 모든 HTML 요소와 리소스를 로딩한 후 실행됨
+		window.onload = function () {
+			// 홈페이지 내용을 불러온다
+			loadPage('home.html');
+		};
+	</script>
+</body>
+</html>
