@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CGV 클론</title>
     <style>
+
+        body{
+            margin: 0;
+        }
         .container {
             position: relative;
             width: 100%;
-            /* display:flex; 는 fixed 요소와 상충하니 제거 */
         }
 
         aside {
@@ -17,6 +20,7 @@
         }
 
         aside.sidebar {
+            /*z-index: -999;*/
             position: fixed;
             left: 0;
             top: 0;
@@ -24,7 +28,9 @@
             height: 100vh;
             /*border: 1px solid rgb(5, 16, 233); 왼쪽 사이드바*/
             margin: 0;
-            /* margin auto 제거 */
+            box-sizing: border-box;
+
+           
         }
 
         main {
@@ -33,23 +39,28 @@
             margin-right: 250px;
             width: auto;
             /* 필요 시 100% - 500px도 가능*/
-            /*border: 1px solid rgb(11, 246, 93); 중간 메인창*/
-            padding: 20px;
+            /*border: 1px solid rgb(14, 15, 15); 중간 메인창*/
+            padding: 20px; 
             box-sizing: border-box;
+            /*background-color: aqua;*/
         }
 
         .side-main {
             display: flex;
             flex-direction: column;
+            justify-content: flex-end;
+
             /* 세로 방향 정렬 */
             gap: 15px;
             /* 자식 요소 사이 간격 */
-            margin-bottom: 150px;
+           
             /* 아래 공백 추가 */
         }
 
         /* side-banner도 화면 오른쪽 고정 */
         aside.side-banner {
+
+            /*z-index: -999;*/
             position: fixed;
             right: 0;
             /* 오른쪽 고정 */
@@ -58,14 +69,17 @@
             height: 100vh;
             /*border: 1px solid rgb(200, 0, 0);  오른쪽 아시드바 */
             background: #fff;
-            padding: 10px;
+            padding: 30px;
             margin: 0 auto;
 
 
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
+            align-items: center;
             /* 하단 정렬 */
+
+            box-sizing: border-box;
 
 
         }
