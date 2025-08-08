@@ -480,49 +480,60 @@
     <script>
         // 페이지 내용을 동적으로 불러오는 함수
         async function loadPage(url) {
-            const content = document.getElementById('content');
-            content.innerHTML = '<div class="skeleton">불러오는 중...</div>';
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="skeleton">불러오는 중...</div>';
 
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('페이지 불러오기 실패');
-                }
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('페이지 불러오기 실패');
+    const html = await response.text();
+    content.innerHTML = html;
 
-                const html = await response.text();
+    // 임시 DOM
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
 
-                // 1. HTML 삽입
-                content.innerHTML = html;
+    // 동적 CSS 로드 (중복방지)
+    tempDiv.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (![...document.head.querySelectorAll('link[rel="stylesheet"]')].some(l => l.href.includes(href))) {
+        const newLink = document.createElement('link');
+        newLink.rel = 'stylesheet';
+        newLink.href = href;
+        document.head.appendChild(newLink);
+      }
+    });
 
-                // 2. 임시 DOM을 만들어서 내부의 <link>와 <script>를 찾아 처리
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
+    // 동적 JS 로드 (중복방지)
+    const scriptPromises = [];
+    tempDiv.querySelectorAll('script[src]').forEach(script => {
+      const src = script.getAttribute('src');
+      if (![...document.querySelectorAll('script[src]')].some(s => s.src.includes(src))) {
+        scriptPromises.push(new Promise(resolve => {
+          const newScript = document.createElement('script');
+          newScript.src = src;
+          newScript.onload = resolve;
+          document.body.appendChild(newScript);
+        }));
+      }
+    });
 
-                // CSS 파일 추가
-                const links = tempDiv.querySelectorAll('link[rel="stylesheet"]');
-                links.forEach(link => {
-                    const newLink = document.createElement('link');
-                    newLink.rel = 'stylesheet';
-                    newLink.href = link.href;
-                    document.head.appendChild(newLink);
-                });
+    // inline script 바로 실행
+    tempDiv.querySelectorAll('script:not([src])').forEach(script => {
+      const newScript = document.createElement('script');
+      newScript.textContent = script.textContent;
+      document.body.appendChild(newScript);
+    });
 
-                // JS 실행
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
+    // 외부 script들이 모두 로드된 후(상품 출력, 이벤트 정상 작동)
+    await Promise.all(scriptPromises);
 
-            } catch (error) {
-                content.innerHTML = `<p style="color:red;">오류: ${error.message}</p>`;
-            }
-        }
+  } catch (error) {
+    content.innerHTML = `<p style="color:red;">오류: ${error.message}</p>`;
+  }
+}
+
+
 
         // 페이지가 처음 열릴 때 자동으로 'home.html'을 로드
         window.onload = function() {
