@@ -345,6 +345,19 @@ function renderEventCards_list() {
   });
 }
 
+const script = document.createElement('script');
+  script.src = "https://widget.tagembed.com/embed.min.js";
+  script.type = "text/javascript";
+  script.onload = () => {
+    console.log("✅ TagEmbed 스크립트 로드됨");
+    if (window.TagEmbed && typeof window.TagEmbed.init === "function") {
+      window.TagEmbed.init();
+    } else {
+      console.error("❌ TagEmbed.init() 호출 실패 - 객체 없음");
+    }
+  };
+  document.head.appendChild(script);
+
 // ================================
 // 🟢 초기 렌더링 실행
 // ================================
